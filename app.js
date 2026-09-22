@@ -1,20 +1,9 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import { getDatabase, onValue, ref, set } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
+import { onValue, ref, set } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
+import { db } from './src/firebase.js';
 
 const members = ['순이', '필이', '상우', '웅이', '민이', '원이'];
-const firebaseConfig = {
-  apiKey: 'AIzaSyCJAIrZjJ6nt1tfdGmov2eTl-grlj_sojM',
-  authDomain: 'heath-37315.firebaseapp.com',
-  databaseURL: 'https://heath-37315-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'heath-37315',
-  storageBucket: 'heath-37315.firebasestorage.app',
-  messagingSenderId: '924162183473',
-  appId: '1:924162183473:web:b582676ad48c1b30656010',
-  measurementId: 'G-WP23QJTD73'
-};
-const firebaseApp = initializeApp(firebaseConfig);
-const database = getDatabase(firebaseApp);
-const attendanceRef = ref(database, 'attendance');
+const database = db;
+const attendanceRef = ref(db, 'attendance');
 const airServiceKey = 'd0f07c7b0b2b1e128da4617d440bb9cd551b0552cad6b3f137fbb3900138a4e7';
 const kmaAuthKey = 'd2CcU-KkRL6gnFPipPS-Lw';
 const airApiUrl = 'https://apis.data.go.kr/5590000/AirQualityService/getAirQualityList';
