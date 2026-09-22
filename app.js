@@ -13,6 +13,7 @@ const today = new Date();
 let calendarDate = new Date(today.getFullYear(), today.getMonth(), 1);
 let selectedDate = formatDate(today);
 let attendance = {};
+const localAttendanceKey = 'yangju-crew-attendance';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -25,6 +26,26 @@ function formatDate(date) {
 
 function displayDate(date) {
   return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+}
+
+function loadLocalAttendance() {
+  try {
+    const saved = localStorage.getItem(localAttendanceKey);
+    return saved ? JSON.parse(saved) : {};
+  } catch (error) {
+    console.error('Local attendance load failed:', error);
+    return {};
+  }
+}
+
+function saveLocalAttendance() {
+  try {
+    localStorage.setItem(localAttendanceKey, JSON.stringify(attendance));
+    return true;
+  } catch (error) {
+    console.error('Local attendance save failed:', error);
+    return false;
+  }
 }
 
 function renderMembers() {
@@ -54,6 +75,7 @@ async function toggleMember(member) {
   renderMembers();
   renderCalendar();
   renderMonthlyStats();
+  saveLocalAttendance();
   await saveAttendanceData(member);
 }
 
@@ -66,15 +88,19 @@ async function saveAttendanceData(member) {
     }));
     const monthKey = selectedDate.slice(0, 7);
     const report = buildMonthlyReport(monthKey);
-    await Promise.all([
-      set(ref(database, `attendance/${selectedDate}`), records),
-      set(ref(database, `monthlyReports/${monthKey}`), report)
-    ]);
-    $('#savedMessage').textContent = `${member}님의 출석과 이달의 리포트를 Firebase에 저장했어요.`;
+    try {
+      await Promise.all([
+        set(ref(database, `attendance/${selectedDate}`), records),
+        set(ref(database, `monthlyReports/${monthKey}`), report)
+      ]);
+      $('#savedMessage').textContent = `${member}님의 출석을 로컬과 Firebase에 저장했어요.`;
+    } catch (firebaseError) {
+      console.error('Firebase attendance save failed:', firebaseError);
+      $('#savedMessage').textContent = `${member}님의 출석을 이 브라우저에 저장했어요. Firebase 연결은 실패했습니다.`;
+    }
   } catch (error) {
-    console.error('Firebase attendance save failed:', error);
-    const reason = error?.code === 'PERMISSION_DENIED' ? 'Database Rules에서 쓰기 권한을 허용해주세요.' : '인터넷 연결과 Firebase 설정을 확인해주세요.';
-    $('#savedMessage').textContent = `Firebase 저장 실패: ${reason}`;
+    console.error('Attendance save failed:', error);
+    $('#savedMessage').textContent = '출석 저장에 실패했습니다. 브라우저 저장 공간을 확인해주세요.';
   }
   window.setTimeout(() => { $('#savedMessage').textContent = ''; }, 2500);
 }
@@ -82,7 +108,7 @@ async function saveAttendanceData(member) {
 function subscribeToAttendance() {
   onValue(attendanceRef, (snapshot) => {
     const records = snapshot.val() || {};
-    attendance = Object.entries(records).reduce((result, [date, names]) => {
+    const firebaseAttendance = Object.entries(records).reduce((result, [date, names]) => {
       const checkedNames = Array.isArray(names)
         ? names.filter((record) => record?.check === true).map((record) => record.name).filter(Boolean)
         : Object.values(names || {})
@@ -92,11 +118,15 @@ function subscribeToAttendance() {
       if (checkedNames.length) result[date] = checkedNames;
       return result;
     }, {});
+    if (Object.keys(firebaseAttendance).length) {
+      attendance = firebaseAttendance;
+      saveLocalAttendance();
+    }
     renderMembers();
     renderCalendar();
     renderMonthlyStats();
   }, () => {
-    $('#savedMessage').textContent = 'Firebase 출석 기록을 불러오지 못했어요.';
+    $('#savedMessage').textContent = '로컬 출석 기록을 사용하고 있어요. Firebase 연결을 확인해주세요.';
   });
 }
 
@@ -288,6 +318,7 @@ async function loadWeather() {
 
 function setup() {
   $('#todayLabel').textContent = displayDate(today);
+  attendance = loadLocalAttendance();
   $('#closeDayModal').addEventListener('click', () => $('#dayModal').close());
   $('#dayModal').addEventListener('click', (event) => {
     if (event.target === $('#dayModal')) $('#dayModal').close();
