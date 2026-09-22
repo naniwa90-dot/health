@@ -8,8 +8,8 @@ const firebaseConfig = {
   projectId: 'heath-37315',
   storageBucket: 'heath-37315.firebasestorage.app',
   messagingSenderId: '924162183473',
-  appId: '1:924162183473:web:b582676ad48c1b30656010',
-  measurementId: 'G-WP23QJTD73'
+  appId: '1:924162183473:web:ccbe2a6662f56dad656010',
+  measurementId: 'G-NZL6WG45WC'
 };
 
 const app = initializeApp(firebaseConfig);
