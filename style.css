@@ -1,0 +1,132 @@
+* { box-sizing: border-box; }
+:root {
+  --ink: #153338;
+  --muted: #6d8582;
+  --line: #dce8e3;
+  --paper: #f7faf6;
+  --cream: #fffdf5;
+  --teal: #17605e;
+  --mint: #d8eee1;
+  --coral: #ec775d;
+  --yellow: #f4c85b;
+}
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Gowun Dodum", sans-serif; }
+button { font: inherit; }
+.page-shell { max-width: 1180px; margin: 0 auto; padding: 0 42px 40px; overflow: hidden; }
+.topbar { min-height: 92px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+.brand-mark { width: 42px; height: 42px; display: grid; place-items: center; color: white; background: var(--teal); border-radius: 50% 50% 46% 42%; font: 700 13px "Space Grotesk", sans-serif; transform: rotate(-8deg); }
+.brand strong { display: block; font-size: 19px; line-height: 1; letter-spacing: .02em; }
+.brand small, .topbar-date { color: var(--muted); font-size: 12px; }
+.brand small { display: block; margin-top: 5px; }
+.topbar-date { font-family: "Space Grotesk", sans-serif; letter-spacing: .04em; }
+.intro-section { min-height: 342px; display: flex; align-items: center; justify-content: space-between; gap: 30px; position: relative; }
+.eyebrow, .panel-kicker { margin: 0 0 15px; color: var(--coral); font: 600 11px "Space Grotesk", sans-serif; letter-spacing: .16em; }
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 20px; font-size: clamp(42px, 6vw, 70px); line-height: 1.08; letter-spacing: -.04em; font-weight: 400; }
+h1 em { color: var(--teal); font-style: normal; }
+.intro-copy { color: var(--muted); font-size: 16px; line-height: 1.8; }
+.sunrise-art { width: 48%; height: 260px; position: relative; overflow: hidden; border-radius: 46% 46% 10px 10px; background: #f9dfb2; }
+.sun { position: absolute; width: 130px; height: 130px; top: 34px; right: 21%; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 0 16px rgba(244,200,91,.2); }
+.hill { position: absolute; bottom: -95px; width: 75%; height: 210px; border-radius: 50% 50% 0 0; transform: rotate(-7deg); }
+.hill-back { left: -12%; background: #aacdbb; }
+.hill-front { right: -17%; background: #4d8e7b; transform: rotate(9deg); }
+.art-label { position: absolute; left: 20px; bottom: 17px; color: #fffdf5; font: 600 11px "Space Grotesk", sans-serif; letter-spacing: .2em; }
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.status-panel { min-height: 246px; padding: 27px 30px; border: 1px solid var(--line); border-radius: 4px; background: var(--cream); }
+.weather-panel { background: var(--teal); color: white; border-color: var(--teal); }
+.panel-heading, .section-heading, .weather-main { display: flex; justify-content: space-between; align-items: flex-start; }
+.status-panel h2, .section-heading h2 { margin: 0; font-size: 26px; font-weight: 400; letter-spacing: -.04em; }
+.weather-panel .panel-kicker, .weather-panel .data-note { color: #b8d8c9; }
+.data-badge { padding: 6px 10px; color: var(--teal); background: var(--mint); border-radius: 100px; font-size: 11px; }
+.metric-row { display: flex; align-items: baseline; gap: 11px; margin-top: 31px; }
+.metric-value { font: 600 58px/1 "Space Grotesk", sans-serif; letter-spacing: -.08em; }
+.metric-unit { color: var(--muted); font: 12px/1.45 "Space Grotesk", sans-serif; }
+.weather-panel .metric-unit { color: #c5ded2; }
+.meter { height: 7px; margin-top: 20px; overflow: hidden; background: #e6efea; border-radius: 20px; }
+.meter span { display: block; width: 5%; height: 100%; background: var(--teal); border-radius: inherit; transition: width .5s ease; }
+.data-note { margin: 16px 0 0; color: var(--muted); font-size: 12px; }
+.weather-icon { font-size: 31px; line-height: 1; }
+.weather-main { align-items: center; margin-top: 30px; }
+.weather-tags { display: flex; gap: 22px; }
+.weather-tags span { display: grid; gap: 5px; font-size: 12px; }
+.weather-tags b { color: #b8d8c9; font-size: 11px; font-weight: 400; }
+.weather-tags i { font-style: normal; }
+.attendance-section, .honors-section, .calendar-section { margin-top: 88px; }
+.section-heading { align-items: end; }
+.attendance-count { color: var(--muted); font-size: 13px; }
+.attendance-count strong { color: var(--teal); font: 600 28px "Space Grotesk", sans-serif; }
+.section-description { margin: 12px 0 26px; color: var(--muted); font-size: 14px; }
+.member-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.member-button { min-height: 125px; padding: 15px 8px; border: 1px solid var(--line); border-radius: 3px; background: white; color: var(--ink); cursor: pointer; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+.member-button:hover { transform: translateY(-4px); border-color: var(--teal); }
+.member-button.checked { color: white; background: var(--teal); border-color: var(--teal); }
+.member-avatar { width: 38px; height: 38px; display: grid; place-items: center; margin: 0 auto 13px; border-radius: 50%; color: var(--teal); background: var(--mint); font-weight: 700; }
+.checked .member-avatar { color: var(--teal); background: var(--yellow); }
+.member-name { display: block; font-size: 16px; }
+.member-state { display: block; margin-top: 6px; opacity: .7; font-size: 11px; }
+.attendance-actions { display: flex; justify-content: space-between; align-items: center; min-height: 36px; margin-top: 9px; }
+.saved-message { color: var(--teal); font-size: 12px; }
+.text-button { padding: 5px 0; border: 0; color: var(--muted); background: transparent; cursor: pointer; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
+.text-button:hover { color: var(--coral); }
+.month-label { color: var(--muted); font-size: 13px; }
+.honor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
+.honor-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 15px; padding: 22px 24px; border-left: 4px solid var(--teal); background: white; }
+.low-card { border-left-color: var(--coral); }
+.honor-icon { font: 32px "Space Grotesk", sans-serif; color: var(--teal); }
+.low-card .honor-icon { color: var(--coral); }
+.honor-card p { margin: 0 0 7px; color: var(--muted); font-size: 12px; }
+.honor-card strong { font-size: 19px; font-weight: 400; }
+.honor-card small { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.calendar-heading { margin-bottom: 24px; }
+.calendar-nav { display: flex; align-items: center; gap: 16px; }
+.calendar-nav strong { min-width: 92px; text-align: center; font: 600 14px "Space Grotesk", sans-serif; }
+.calendar-nav button { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 50%; color: var(--teal); background: white; cursor: pointer; }
+.calendar-nav button:hover { background: var(--mint); }
+.calendar-wrap { padding: 4px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.weekday-row, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.weekday-row span { padding: 14px 0 10px; color: var(--muted); text-align: center; font: 11px "Space Grotesk", sans-serif; }
+.weekday-row span:first-child { color: var(--coral); }
+.day-cell { min-height: 76px; padding: 9px 8px; border-top: 1px solid #edf2ed; border-right: 1px solid #edf2ed; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+.day-cell:nth-child(7n) { border-right: 0; }
+.day-cell:hover, .day-cell.selected { background: var(--mint); }
+.day-cell.empty { cursor: default; }
+.day-number { font: 12px "Space Grotesk", sans-serif; }
+.day-cell.today .day-number { display: inline-grid; width: 23px; height: 23px; place-items: center; color: white; background: var(--coral); border-radius: 50%; }
+.day-dots { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 14px; }
+.day-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+.day-detail { display: flex; align-items: center; gap: 8px; min-height: 56px; margin-top: 13px; padding: 0 15px; color: var(--muted); background: white; font-size: 13px; }
+.detail-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--teal); }
+.day-modal { width: min(420px, calc(100% - 32px)); padding: 0; border: 0; border-radius: 5px; color: var(--ink); background: var(--cream); box-shadow: 0 24px 70px rgba(21, 51, 56, .2); }
+.day-modal::backdrop { background: rgba(21, 51, 56, .38); backdrop-filter: blur(3px); }
+.modal-content { position: relative; padding: 34px 30px 30px; }
+.modal-content h2 { margin: 0; font-size: 27px; font-weight: 400; letter-spacing: -.04em; }
+.modal-close { position: absolute; top: 15px; right: 17px; width: 31px; height: 31px; border: 0; border-radius: 50%; color: var(--muted); background: transparent; cursor: pointer; font: 25px/1 "Space Grotesk", sans-serif; }
+.modal-close:hover { color: var(--teal); background: var(--mint); }
+.modal-summary { margin: 8px 0 22px; color: var(--muted); font-size: 13px; }
+.modal-members { display: flex; flex-wrap: wrap; gap: 8px; }
+.modal-member { padding: 9px 13px; border-radius: 100px; color: var(--teal); background: var(--mint); font-size: 14px; }
+.modal-empty { margin: 0; padding: 20px; color: var(--muted); text-align: center; background: white; font-size: 13px; }
+footer { display: flex; justify-content: space-between; margin-top: 80px; padding-top: 17px; border-top: 1px solid var(--line); color: var(--muted); font: 10px "Space Grotesk", sans-serif; letter-spacing: .1em; }
+@media (max-width: 720px) {
+  .page-shell { padding: 0 20px 30px; }
+  .topbar { min-height: 75px; }
+  .topbar-date { font-size: 10px; }
+  .intro-section { min-height: 370px; align-items: flex-start; padding-top: 54px; }
+  .intro-copy { font-size: 14px; }
+  .sunrise-art { position: absolute; right: -20px; bottom: 0; width: 63%; height: 160px; opacity: .85; }
+  .sun { width: 80px; height: 80px; top: 28px; }
+  .status-grid, .honor-grid { grid-template-columns: 1fr; }
+  .status-panel { min-height: 220px; padding: 23px; }
+  .attendance-section, .honors-section, .calendar-section { margin-top: 64px; }
+  .member-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  .member-button { min-height: 106px; }
+  .member-avatar { margin-bottom: 9px; }
+  .honor-card { padding: 18px 15px; }
+  .honor-card small { font-size: 10px; }
+  .day-cell { min-height: 58px; padding: 7px 5px; }
+  .day-dots { margin-top: 9px; }
+  footer { margin-top: 60px; }
+}
+@media (max-width: 390px) { .weather-tags { gap: 10px; } .metric-value { font-size: 50px; } }
