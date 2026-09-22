@@ -1,4 +1,20 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import { getDatabase, onValue, ref, set } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js';
+
 const members = ['순이', '필이', '상우', '웅이', '민이', '원이'];
+const firebaseConfig = {
+  apiKey: 'AIzaSyCJAIrZjJ6nt1tfdGmov2eTl-grlj_sojM',
+  authDomain: 'heath-37315.firebaseapp.com',
+  databaseURL: 'https://heath-37315-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'heath-37315',
+  storageBucket: 'heath-37315.firebasestorage.app',
+  messagingSenderId: '924162183473',
+  appId: '1:924162183473:web:b582676ad48c1b30656010',
+  measurementId: 'G-WP23QJTD73'
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const database = getDatabase(firebaseApp);
+const attendanceRef = ref(database, 'attendance');
 const airServiceKey = 'd0f07c7b0b2b1e128da4617d440bb9cd551b0552cad6b3f137fbb3900138a4e7';
 const kmaAuthKey = 'd2CcU-KkRL6gnFPipPS-Lw';
 const airApiUrl = 'https://apis.data.go.kr/5590000/AirQualityService/getAirQualityList';
@@ -39,17 +55,60 @@ function renderMembers() {
   });
 }
 
-function toggleMember(member) {
+async function toggleMember(member) {
   const current = new Set(attendance[selectedDate] || []);
   if (current.has(member)) current.delete(member);
   else current.add(member);
-  attendance[selectedDate] = members.filter((name) => current.has(name));
-  if (!attendance[selectedDate].length) delete attendance[selectedDate];
+  const updated = members.filter((name) => current.has(name));
+  if (updated.length) attendance[selectedDate] = updated;
+  else delete attendance[selectedDate];
   renderMembers();
   renderCalendar();
   renderMonthlyStats();
-  $('#savedMessage').textContent = `${member}님의 오늘 기록을 ${current.has(member) ? '추가' : '취소'}했어요.`;
+  await saveAttendanceData(member);
+}
+
+async function saveAttendanceData(member) {
+  try {
+    const records = members.map((name) => ({
+      date: selectedDate,
+      name,
+      check: attendance[selectedDate]?.includes(name) || false
+    }));
+    const monthKey = selectedDate.slice(0, 7);
+    const report = buildMonthlyReport(monthKey);
+    await Promise.all([
+      set(ref(database, `attendance/${selectedDate}`), records),
+      set(ref(database, `monthlyReports/${monthKey}`), report)
+    ]);
+    $('#savedMessage').textContent = `${member}님의 출석과 이달의 리포트를 Firebase에 저장했어요.`;
+  } catch (error) {
+    console.error('Firebase attendance save failed:', error);
+    const reason = error?.code === 'PERMISSION_DENIED' ? 'Database Rules에서 쓰기 권한을 허용해주세요.' : '인터넷 연결과 Firebase 설정을 확인해주세요.';
+    $('#savedMessage').textContent = `Firebase 저장 실패: ${reason}`;
+  }
   window.setTimeout(() => { $('#savedMessage').textContent = ''; }, 2500);
+}
+
+function subscribeToAttendance() {
+  onValue(attendanceRef, (snapshot) => {
+    const records = snapshot.val() || {};
+    attendance = Object.entries(records).reduce((result, [date, names]) => {
+      const checkedNames = Array.isArray(names)
+        ? names.filter((record) => record?.check === true).map((record) => record.name).filter(Boolean)
+        : Object.values(names || {})
+          .filter((record) => record?.check === true)
+          .map((record) => record.name)
+          .filter(Boolean);
+      if (checkedNames.length) result[date] = checkedNames;
+      return result;
+    }, {});
+    renderMembers();
+    renderCalendar();
+    renderMonthlyStats();
+  }, () => {
+    $('#savedMessage').textContent = 'Firebase 출석 기록을 불러오지 못했어요.';
+  });
 }
 
 function renderMonthlyStats() {
@@ -72,6 +131,26 @@ function renderMonthlyStats() {
   $('#bestCount').textContent = `${bestCount}회 참여`;
   $('#lowMember').textContent = leastMembers.map(({ name }) => name).join(', ');
   $('#lowCount').textContent = `${leastCount}회 참여`;
+}
+
+function buildMonthlyReport(monthKey) {
+  const counts = Object.entries(attendance)
+    .filter(([date]) => date.startsWith(monthKey))
+    .reduce((result, [, names]) => {
+      names.forEach((name) => { result[name] = (result[name] || 0) + 1; });
+      return result;
+    }, {});
+  const ordered = members.map((name) => ({ name, count: counts[name] || 0 }));
+  const bestCount = Math.max(...ordered.map(({ count }) => count));
+  const leastCount = Math.min(...ordered.map(({ count }) => count));
+  return {
+    month: monthKey,
+    bestMember: ordered.filter(({ count }) => count === bestCount).map(({ name }) => name),
+    bestCount,
+    lowMember: ordered.filter(({ count }) => count === leastCount).map(({ name }) => name),
+    lowCount: leastCount,
+    updatedAt: new Date().toISOString()
+  };
 }
 
 function renderCalendar() {
@@ -229,6 +308,7 @@ function setup() {
   renderMembers();
   renderCalendar();
   renderMonthlyStats();
+  subscribeToAttendance();
   loadAirQuality();
   loadWeather();
 }
