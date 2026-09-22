@@ -1,5 +1,4 @@
 const members = ['순이', '필이', '상우', '웅이', '민이', '원이'];
-const attendanceKey = 'yangju-crew-attendance';
 const airServiceKey = 'd0f07c7b0b2b1e128da4617d440bb9cd551b0552cad6b3f137fbb3900138a4e7';
 const kmaAuthKey = 'd2CcU-KkRL6gnFPipPS-Lw';
 const airApiUrl = 'https://apis.data.go.kr/5590000/AirQualityService/getAirQualityList';
@@ -8,7 +7,7 @@ const kmaApiUrl = 'https://apihub.kma.go.kr/api/typ01/url/fct_afs_dl.php';
 const today = new Date();
 let calendarDate = new Date(today.getFullYear(), today.getMonth(), 1);
 let selectedDate = formatDate(today);
-let attendance = readAttendance();
+let attendance = {};
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -17,18 +16,6 @@ function formatDate(date) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-}
-
-function readAttendance() {
-  try {
-    return JSON.parse(localStorage.getItem(attendanceKey)) || {};
-  } catch {
-    return {};
-  }
-}
-
-function saveAttendance() {
-  localStorage.setItem(attendanceKey, JSON.stringify(attendance));
 }
 
 function displayDate(date) {
@@ -58,7 +45,6 @@ function toggleMember(member) {
   else current.add(member);
   attendance[selectedDate] = members.filter((name) => current.has(name));
   if (!attendance[selectedDate].length) delete attendance[selectedDate];
-  saveAttendance();
   renderMembers();
   renderCalendar();
   renderMonthlyStats();
